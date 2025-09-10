@@ -32,21 +32,21 @@ jobs:
     - name: Build iOS Customer App
       run: |
         cd customer_app
-        flutter build ios --release --no-codesign
+        flutter build ios --simulator --release
     
     - name: Build iOS Driver App
       run: |
         cd driver_app
-        flutter build ios --release --no-codesign
+        flutter build ios --simulator --release
     
     - name: Upload Customer App Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: drivrr-customer-ios
-        path: customer_app/build/ios/iphoneos/
+        name: drivrr-customer-ios-simulator
+        path: customer_app/build/ios/iphonesimulator/
     
     - name: Upload Driver App Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: drivrr-driver-ios
-        path: driver_app/build/ios/iphoneos/
+        name: drivrr-driver-ios-simulator
+        path: driver_app/build/ios/iphonesimulator/
