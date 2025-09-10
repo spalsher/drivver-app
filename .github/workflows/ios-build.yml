@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -40,13 +40,13 @@ jobs:
         flutter build ios --release --no-codesign
     
     - name: Upload Customer App Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: drivrr-customer-ios
         path: customer_app/build/ios/iphoneos/
     
     - name: Upload Driver App Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: drivrr-driver-ios
         path: driver_app/build/ios/iphoneos/
