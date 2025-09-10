@@ -32,12 +32,12 @@ jobs:
     - name: Build iOS Customer App
       run: |
         cd customer_app
-        flutter build ios --simulator --release
+        flutter build ios --simulator
     
     - name: Build iOS Driver App
       run: |
         cd driver_app
-        flutter build ios --simulator --release
+        flutter build ios --simulator
     
     - name: Upload Customer App Artifact
       uses: actions/upload-artifact@v4
