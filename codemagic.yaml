@@ -1,0 +1,37 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up provisioning profiles
+        script: |
+          # This would be configured with your Apple Developer certificates
+          echo "Setting up provisioning profiles..."
+      - name: Get Flutter dependencies - Customer App
+        script: |
+          cd customer_app
+          flutter packages pub get
+      - name: Get Flutter dependencies - Driver App
+        script: |
+          cd driver_app  
+          flutter packages pub get
+      - name: Flutter build iOS Customer App
+        script: |
+          cd customer_app
+          flutter build ios --release
+      - name: Flutter build iOS Driver App
+        script: |
+          cd driver_app
+          flutter build ios --release
+    artifacts:
+      - customer_app/build/ios/iphoneos/*.app
+      - driver_app/build/ios/iphoneos/*.app
+    publishing:
+      # Configure App Store Connect publishing here

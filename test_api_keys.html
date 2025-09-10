@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Test MapTiler API Keys</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.umd.js"></script>
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        .test-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; }
+        #map1, #map2, #map3 { width: 100%; height: 300px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>MapTiler API Key Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Key 1: zKmHEI76JocEKpcky18z (Default)</h3>
+        <div id="map1"></div>
+        <div id="status1">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Key 2: NbLuKHhFj26YAHTUNrOW (Test API)</h3>
+        <div id="map2"></div>
+        <div id="status2">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Key 3: Jyq7ID45NrHWVYhUnBvm (Drivrr Production)</h3>
+        <div id="map3"></div>
+        <div id="status3">Loading...</div>
+    </div>
+
+    <script>
+        // Test API Key 1
+        try {
+            maptilersdk.config.apiKey = 'zKmHEI76JocEKpcky18z';
+            const map1 = new maptilersdk.Map({
+                container: 'map1',
+                style: maptilersdk.MapStyle.STREETS,
+                center: [-122.4194, 37.7749],
+                zoom: 12
+            });
+            map1.on('load', () => {
+                document.getElementById('status1').innerHTML = '✅ SUCCESS - Key working!';
+                document.getElementById('status1').style.color = 'green';
+            });
+            map1.on('error', (e) => {
+                document.getElementById('status1').innerHTML = '❌ ERROR: ' + e.error;
+                document.getElementById('status1').style.color = 'red';
+            });
+        } catch (e) {
+            document.getElementById('status1').innerHTML = '❌ EXCEPTION: ' + e.message;
+            document.getElementById('status1').style.color = 'red';
+        }
+
+        // Test API Key 2
+        setTimeout(() => {
+            try {
+                maptilersdk.config.apiKey = 'NbLuKHhFj26YAHTUNrOW';
+                const map2 = new maptilersdk.Map({
+                    container: 'map2',
+                    style: maptilersdk.MapStyle.STREETS,
+                    center: [-122.4194, 37.7749],
+                    zoom: 12
+                });
+                map2.on('load', () => {
+                    document.getElementById('status2').innerHTML = '✅ SUCCESS - Key working!';
+                    document.getElementById('status2').style.color = 'green';
+                });
+                map2.on('error', (e) => {
+                    document.getElementById('status2').innerHTML = '❌ ERROR: ' + e.error;
+                    document.getElementById('status2').style.color = 'red';
+                });
+            } catch (e) {
+                document.getElementById('status2').innerHTML = '❌ EXCEPTION: ' + e.message;
+                document.getElementById('status2').style.color = 'red';
+            }
+        }, 1000);
+
+        // Test API Key 3
+        setTimeout(() => {
+            try {
+                maptilersdk.config.apiKey = 'Jyq7ID45NrHWVYhUnBvm';
+                const map3 = new maptilersdk.Map({
+                    container: 'map3',
+                    style: maptilersdk.MapStyle.STREETS,
+                    center: [-122.4194, 37.7749],
+                    zoom: 12
+                });
+                map3.on('load', () => {
+                    document.getElementById('status3').innerHTML = '✅ SUCCESS - Key working!';
+                    document.getElementById('status3').style.color = 'green';
+                });
+                map3.on('error', (e) => {
+                    document.getElementById('status3').innerHTML = '❌ ERROR: ' + e.error;
+                    document.getElementById('status3').style.color = 'red';
+                });
+            } catch (e) {
+                document.getElementById('status3').innerHTML = '❌ EXCEPTION: ' + e.message;
+                document.getElementById('status3').style.color = 'red';
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+name: iOS Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.3'
+        channel: 'stable'
+    
+    - name: Install dependencies - Customer App
+      run: |
+        cd customer_app
+        flutter pub get
+    
+    - name: Install dependencies - Driver App  
+      run: |
+        cd driver_app
+        flutter pub get
+    
+    - name: Build iOS Customer App
+      run: |
+        cd customer_app
+        flutter build ios --release --no-codesign
+    
+    - name: Build iOS Driver App
+      run: |
+        cd driver_app
+        flutter build ios --release --no-codesign
+    
+    - name: Upload Customer App Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: drivrr-customer-ios
+        path: customer_app/build/ios/iphoneos/
+    
+    - name: Upload Driver App Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: drivrr-driver-ios
+        path: driver_app/build/ios/iphoneos/
