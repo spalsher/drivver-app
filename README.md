@@ -194,8 +194,8 @@ Follow Apple’s trademark guidelines. Apple trademarks must not appear in your 
 ## 🚀 Tech Stack
 
 - **Frontend:** Flutter (Customer & Captain Apps)  
-- **Backend:** Node.js (Admin Panel)  
-- **Database:** MySQL  
+- **Backend:** Node.js (Admin Panel) and GO Lang
+- **Database:** PostgreSQL 
 
 ---
 
