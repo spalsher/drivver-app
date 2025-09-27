@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart' as provider;
 import 'dart:async';
 import '../../../requests/presentation/screens/ride_requests_screen.dart';
 import '../../../earnings/presentation/screens/earnings_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../widgets/driver_map_widget.dart';
 import '../../../../core/services/native_websocket_service.dart';
+import '../../../../core/providers/auth_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,8 +61,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   
   void _initializeWebSocket() async {
     try {
+      // Get real driver ID from auth
+      final authProvider = provider.Provider.of<AuthProvider>(context, listen: false);
+      final driverId = await authProvider.getDriverId() ?? 'driver_123';
+      print('🔑 Using driver ID for WebSocket: $driverId');
+      
       // Connect to Go WebSocket backend  
-      await DriverNativeWebSocketService.instance.connect('driver_123'); // TODO: Get from auth
+      await DriverNativeWebSocketService.instance.connect(driverId);
       
       // Listen for ride requests
       DriverNativeWebSocketService.instance.rideRequests.listen((request) {

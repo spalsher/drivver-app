@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart' as provider;
+import '../../../../core/providers/auth_provider.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -12,7 +14,6 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   bool _isOtpSent = false;
-  bool _isLoading = false;
   String _selectedCountryCode = '+92'; // Pakistan
   
   final List<Map<String, String>> _countryCodes = [
@@ -28,26 +29,28 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    final authProvider = provider.Provider.of<AuthProvider>(context, listen: false);
+    final fullPhone = '$_selectedCountryCode${_phoneController.text}';
 
     try {
-      // TODO: Integrate with API service
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
+      final result = await authProvider.sendOtp(fullPhone);
       
-      setState(() {
-        _isOtpSent = true;
-        _isLoading = false;
-      });
-      
-      // Show development OTP
-      _showDevelopmentOtp('123456');
-      
+      if (result['success']) {
+        setState(() {
+          _isOtpSent = true;
+        });
+        
+        _showSuccess(result['message'] ?? 'OTP sent successfully');
+        
+        // Show development OTP if available
+        final otp = result['otp'];
+        if (otp != null) {
+          _showDevelopmentOtp(otp);
+        }
+      } else {
+        _showError(result['error'] ?? 'Failed to send OTP');
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       _showError('Failed to send OTP. Please try again.');
     }
   }
@@ -58,22 +61,20 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    final authProvider = provider.Provider.of<AuthProvider>(context, listen: false);
+    final fullPhone = '$_selectedCountryCode${_phoneController.text}';
 
     try {
-      // TODO: Integrate with API service
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
+      final success = await authProvider.verifyOtp(fullPhone, _otpController.text);
       
-      // Navigate to verification screen for driver documents
-      context.go('/verification');
-      
+      if (success) {
+        // Navigate to verification screen for driver documents
+        context.go('/verification');
+      } else {
+        _showError(authProvider.errorMessage ?? 'Invalid OTP. Please try again.');
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      _showError('Invalid OTP. Please try again.');
+      _showError('Failed to verify OTP. Please try again.');
     }
   }
 
@@ -82,6 +83,15 @@ class _AuthScreenState extends State<AuthScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
       ),
     );
   }
@@ -121,7 +131,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return provider.Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        final isLoading = authProvider.isLoading;
+        
+        return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(_isOtpSent ? 'Verify OTP' : 'Driver Sign In'),
@@ -224,8 +238,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _sendOtp,
-                  child: _isLoading
+                  onPressed: isLoading ? null : _sendOtp,
+                  child: isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text('Send OTP'),
                 ),
@@ -262,8 +276,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyOtp,
-                  child: _isLoading
+                  onPressed: isLoading ? null : _verifyOtp,
+                  child: isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text('Verify & Continue'),
                 ),
@@ -317,6 +331,8 @@ class _AuthScreenState extends State<AuthScreen> {
           ],
         ),
       ),
+        );
+      },
     );
   }
   

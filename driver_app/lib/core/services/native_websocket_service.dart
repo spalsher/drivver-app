@@ -31,8 +31,7 @@ class DriverNativeWebSocketService {
     _driverId = driverId;
 
     try {
-      final wsUrl = AppConstants.baseUrl.replaceAll('/api', '').replaceAll('http', 'ws');
-      final uri = Uri.parse('$wsUrl/ws?userId=$driverId&userType=driver');
+      final uri = Uri.parse('${AppConstants.socketUrl}?userId=$driverId&userType=driver');
       
       debugPrint('🚗 Driver connecting to Go WebSocket: $uri');
       

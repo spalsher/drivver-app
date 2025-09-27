@@ -4,7 +4,8 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   
   // API Configuration
-  static const String baseUrl = 'http://192.168.20.67:3000/api'; // Update with your backend IP
+  static const String baseUrl = 'http://localhost:3000/api'; // Node.js backend for OTP/Auth
+  static const String socketUrl = 'ws://localhost:8081/ws'; // Go backend for WebSocket
   static const Duration requestTimeout = Duration(seconds: 30);
   
   // Driver Status

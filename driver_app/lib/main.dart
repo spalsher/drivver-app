@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider;
 import 'core/services/navigation_service.dart';
+import 'core/providers/auth_provider.dart';
 import 'shared/themes/app_theme.dart';
 
 void main() {
   runApp(
-    const ProviderScope(
-      child: DrivrrDriverApp(),
+    provider.MultiProvider(
+      providers: [
+        provider.ChangeNotifierProvider(create: (_) => AuthProvider()..initialize()),
+      ],
+      child: const ProviderScope(
+        child: DrivrrDriverApp(),
+      ),
     ),
   );
 }

@@ -128,11 +128,11 @@ func main() {
 	setupRoutes(r)
 
 	// Start server
-	fmt.Println("🚀 Drivrr Go Backend starting on port 3000...")
-	fmt.Println("📡 WebSocket endpoint: ws://localhost:3000/ws")
-	fmt.Println("🌐 API endpoint: http://localhost:3000/api")
+	fmt.Println("🚀 Drivrr Go Backend starting on port 8081...")
+	fmt.Println("📡 WebSocket endpoint: ws://localhost:8081/ws")
+	fmt.Println("🌐 API endpoint: http://localhost:8081/api")
 
-	log.Fatal(r.Run(":3000"))
+	log.Fatal(r.Run(":8081"))
 }
 
 func initDB() {

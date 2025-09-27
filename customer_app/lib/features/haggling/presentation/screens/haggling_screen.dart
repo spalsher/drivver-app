@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import '../../../../core/services/native_websocket_service.dart';
+import '../../../../core/providers/auth_provider.dart';
 
-class HagglingScreen extends StatefulWidget {
+class HagglingScreen extends ConsumerStatefulWidget {
   const HagglingScreen({super.key});
 
   @override
-  State<HagglingScreen> createState() => _HagglingScreenState();
+  ConsumerState<HagglingScreen> createState() => _HagglingScreenState();
 }
 
-class _HagglingScreenState extends State<HagglingScreen> with TickerProviderStateMixin {
+class _HagglingScreenState extends ConsumerState<HagglingScreen> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> _driverOffers = [];
   Timer? _offerTimer;
   Timer? _countdownTimer;
@@ -84,8 +86,13 @@ class _HagglingScreenState extends State<HagglingScreen> with TickerProviderStat
     try {
       print('🔌 HagglingScreen: Connecting to Go WebSocket backend...');
       
+      // Get real user ID from auth
+      final authState = ref.read(authProvider);
+      final userId = authState.user?.id ?? 'customer_123';
+      print('🔑 Using user ID for WebSocket: $userId');
+      
       // Connect to Go backend
-      await NativeWebSocketService.instance.connect('customer_123');
+      await NativeWebSocketService.instance.connect(userId);
       
       // Wait for connection to establish
       await Future.delayed(const Duration(seconds: 1));
@@ -173,6 +180,11 @@ class _HagglingScreenState extends State<HagglingScreen> with TickerProviderStat
     if (_rideData != null) {
       print('🚗 HagglingScreen: Creating ride request with data: $_rideData');
       
+      // Get real user ID from auth
+      final authState = ref.read(authProvider);
+      final userId = authState.user?.id ?? 'customer_123';
+      print('🔑 Using customer ID: $userId');
+      
       final rideRequest = {
         'pickup': _rideData!['pickup'] ?? 'Current Location',
         'destination': _rideData!['destination'] ?? 'Destination',
@@ -184,7 +196,7 @@ class _HagglingScreenState extends State<HagglingScreen> with TickerProviderStat
         'vehicleType': _rideData!['vehicleType'] ?? 'economy',
         'distance': _rideData!['actualDistance'] ?? 5.5,
         'duration': _rideData!['actualDuration'] ?? 15,
-        'customerId': 'customer_123', // TODO: Get from auth
+        'customerId': userId,
       };
       
       print('🚗 HagglingScreen: Final ride request: $rideRequest');
@@ -243,6 +255,10 @@ class _HagglingScreenState extends State<HagglingScreen> with TickerProviderStat
     _offerTimer?.cancel();
     _countdownTimer?.cancel();
     
+    // Get real user ID from auth
+    final authState = ref.read(authProvider);
+    final userId = authState.user?.id ?? 'customer_123';
+    
     // Send acceptance to Go backend with location data
     NativeWebSocketService.instance.acceptOffer(
       rideId: offer['rideId'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
@@ -272,7 +288,7 @@ class _HagglingScreenState extends State<HagglingScreen> with TickerProviderStat
         'pickup': _rideData?['pickup'] ?? 'Current Location',
         'destination': _rideData?['destination'] ?? 'Destination',
         'driverId': offer['driverId'],
-        'customerId': 'customer_123',
+        'customerId': userId,
       },
     );
   }

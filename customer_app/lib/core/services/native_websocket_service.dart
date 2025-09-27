@@ -33,8 +33,7 @@ class NativeWebSocketService {
     _userType = userType;
 
     try {
-      final wsUrl = AppConstants.baseUrl.replaceAll('/api', '').replaceAll('http', 'ws');
-      final uri = Uri.parse('$wsUrl/ws?userId=$userId&userType=$userType');
+      final uri = Uri.parse('${AppConstants.socketUrl}?userId=$userId&userType=$userType');
       
       debugPrint('🔌 Connecting to Go WebSocket: $uri');
       
@@ -214,6 +213,18 @@ class NativeWebSocketService {
     
     _sendMessage(statusMessage);
     debugPrint('🚗 Driver status updated: ${isOnline ? 'ONLINE' : 'OFFLINE'}');
+  }
+
+  /// Cancel a ride
+  void cancelRide(String rideId) {
+    final cancelMessage = {
+      'type': 'cancel_ride',
+      'rideId': rideId,
+      'customerId': _userId,
+    };
+    
+    _sendMessage(cancelMessage);
+    debugPrint('❌ Ride cancelled: $rideId');
   }
 
   /// Disconnect WebSocket

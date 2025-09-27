@@ -108,53 +108,41 @@ class _ActiveTripScreenState extends State<ActiveTripScreen>
         print('📍 Active trip update: $update');
         
         if (update['rideId'] == widget.rideId || update['type'] == 'driver_location_update') {
-          if (update['type'] == 'driver_location_update') {
-            setState(() {
+          setState(() {
+            if (update['type'] == 'driver_location_update') {
               _driverLocation = LatLng(
                 (update['latitude'] as num?)?.toDouble() ?? 0.0,
                 (update['longitude'] as num?)?.toDouble() ?? 0.0,
               );
               _estimatedArrival = '${update['eta'] ?? 'Unknown'} min';
-            });
-            print('📍 Driver location updated: $_driverLocation, ETA: $_estimatedArrival');
-          } else if (update['type'] == 'driver_assigned') {
-            setState(() {
+              print('📍 Driver location updated: $_driverLocation, ETA: $_estimatedArrival');
+            } else if (update['type'] == 'driver_assigned') {
               _driverLocation = LatLng(
                 (update['driverLat'] as num?)?.toDouble() ?? 0.0,
                 (update['driverLng'] as num?)?.toDouble() ?? 0.0,
               );
               _estimatedArrival = '${update['driverETA'] ?? 'Unknown'} min';
               _driverName = update['driverName'] ?? 'Driver';
-            });
-            print('🚗 Driver assigned: $_driverName, ETA: $_estimatedArrival');
-          } else if (update['type'] == 'ride_completed') {
-            setState(() {
+              print('🚗 Driver assigned: $_driverName, ETA: $_estimatedArrival');
+            } else if (update['type'] == 'ride_completed') {
               _tripStatus = 'completed';
               _tripProgress = 1.0;
-            });
-            print('🏁 Ride completed!');
-          }
+              print('🏁 Ride completed!');
+            }
+            
+            _progressController.animateTo(_tripProgress);
+            
+            // Handle trip completion
+            if (_tripStatus == 'completed') {
+              _handleTripCompletion();
+            }
+          });
         }
       },
       onError: (error) {
         print('❌ Trip tracking error: $error');
       },
     );
-          _progressController.animateTo(_tripProgress);
-          
-          // Handle trip completion
-          if (_tripStatus == 'completed') {
-            _handleTripCompletion();
-          }
-        }
-      },
-      onError: (error) {
-        print('❌ Trip status stream error: $error');
-      },
-    );
-
-    // Request initial driver location
-    WebSocketService.instance.requestDriverLocation(widget.rideId);
   }
 
   void _handleTripCompletion() {
@@ -661,7 +649,7 @@ class _ActiveTripScreenState extends State<ActiveTripScreen>
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              WebSocketService.instance.cancelTrip(widget.rideId);
+              NativeWebSocketService.instance.cancelRide(widget.rideId);
               context.go('/home');
             },
             child: const Text('Yes, Cancel'),
