@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'permission_service.dart';
 import 'location_service.dart';
-import '../constants/app_constants.dart';
 
 class AppInitializationService {
   static final AppInitializationService _instance = AppInitializationService._internal();

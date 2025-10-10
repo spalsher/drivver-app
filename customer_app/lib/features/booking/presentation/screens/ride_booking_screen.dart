@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:math' as math;
 
 class RideBookingScreen extends StatefulWidget {
   const RideBookingScreen({super.key});

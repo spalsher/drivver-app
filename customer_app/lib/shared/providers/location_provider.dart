@@ -35,7 +35,7 @@ class CurrentLocationNotifier extends StateNotifier<AsyncValue<LocationModel?>> 
   Future<void> _getCurrentLocation() async {
     try {
       state = const AsyncValue.loading();
-      final location = await _locationService.getCurrentLocation();
+      final location = await _locationService.getCurrentPosition();
       state = AsyncValue.data(location);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
