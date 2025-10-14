@@ -8,6 +8,7 @@ import '../../../profile/presentation/screens/profile_screen.dart';
 import '../widgets/driver_map_widget.dart';
 import '../../../../core/services/native_websocket_service.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/document_verification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -189,6 +190,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
   
   void _toggleOnlineStatus() {
+    // Check if driver is fully verified before going online
+    final documentService = provider.Provider.of<DocumentVerificationService>(context, listen: false);
+    
+    if (!_isOnline && !documentService.isAllDocumentsApproved) {
+      // Show verification required dialog
+      _showVerificationRequiredDialog();
+      return;
+    }
+    
     setState(() {
       _isOnline = !_isOnline;
     });
@@ -214,6 +224,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       );
     }
+  }
+
+  void _showVerificationRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('Verification Required'),
+          ],
+        ),
+        content: const Text(
+          'You need to complete document verification before going online. Please upload and get all required documents approved.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.push('/verification');
+            },
+            child: const Text('Go to Verification'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

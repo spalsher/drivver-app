@@ -3,8 +3,8 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   
   // API Configuration
-  static const String baseUrl = 'http://localhost:3000/api'; // Node.js backend for OTP/Auth
-  static const String socketUrl = 'ws://localhost:8081/ws'; // Go backend for WebSocket
+  static const String baseUrl = 'http://192.168.20.67:3000/api'; // Node.js backend for OTP/Auth
+  static const String socketUrl = 'ws://192.168.20.67:8081/ws'; // Go backend for WebSocket
   
   // MapTiler Configuration  
   static const String mapTilerApiKey = 'zKmHEI76JocEKpcky18z'; // Default API Key (working)

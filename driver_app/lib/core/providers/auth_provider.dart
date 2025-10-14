@@ -144,6 +144,37 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Load driver profile
+  Future<bool> loadDriverProfile() async {
+    if (!_isAuthenticated) return false;
+    
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final result = await _apiService.getDriverProfile();
+      
+      if (result['success']) {
+        _driverData = result['user'];
+        debugPrint('✅ Driver profile loaded successfully');
+        notifyListeners();
+        return true;
+      } else {
+        // If driver profile doesn't exist, it means user hasn't registered as driver yet
+        // This is normal for new users who just completed OTP verification
+        debugPrint('ℹ️ Driver profile not found - user may need to complete registration');
+        _setError('Please complete your driver registration');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('❌ Failed to load profile: $e');
+      _setError('Failed to load profile: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   // Update driver profile
   Future<bool> updateProfile(Map<String, dynamic> profileData) async {
     _setLoading(true);

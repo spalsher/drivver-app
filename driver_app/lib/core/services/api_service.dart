@@ -54,6 +54,9 @@ class ApiService {
   /// Send OTP to phone number
   Future<Map<String, dynamic>> sendOtp({required String phone}) async {
     try {
+      debugPrint('🚀 Sending OTP request to: ${AppConstants.baseUrl}/auth/send-otp');
+      debugPrint('📱 Phone number: $phone');
+      
       final response = await _dio.post(
         '/auth/send-otp',
         data: {
@@ -61,13 +64,16 @@ class ApiService {
         },
       );
 
+      debugPrint('✅ OTP Response: ${response.data}');
       return {
         'success': true,
         'message': response.data['message'] ?? 'OTP sent successfully',
         'otp': response.data['otp'], // Development OTP
       };
     } on DioException catch (e) {
-      debugPrint('❌ Send OTP Error: ${e.message}');
+      debugPrint('❌ Send OTP DioException: ${e.message}');
+      debugPrint('❌ Response: ${e.response?.data}');
+      debugPrint('❌ Status Code: ${e.response?.statusCode}');
       return {
         'success': false,
         'error': e.response?.data['error'] ?? 'Failed to send OTP',
@@ -175,5 +181,109 @@ class ApiService {
   void clearAuthToken() {
     _dio.options.headers.remove('Authorization');
     debugPrint('🔑 Auth token cleared');
+  }
+
+  // Document Verification APIs
+
+  /// Get driver documents status
+  Future<Map<String, dynamic>> getDriverDocuments() async {
+    try {
+      final response = await _dio.get('/drivers/documents');
+      return {
+        'success': true,
+        'documents': response.data['documents'] ?? [],
+      };
+    } on DioException catch (e) {
+      debugPrint('❌ Get Documents Error: ${e.message}');
+      return {
+        'success': false,
+        'error': e.response?.data['error'] ?? 'Failed to fetch documents',
+      };
+    } catch (e) {
+      debugPrint('❌ Unexpected Error: $e');
+      return {
+        'success': false,
+        'error': 'Failed to fetch documents: $e',
+      };
+    }
+  }
+
+  /// Upload document
+  Future<Map<String, dynamic>> uploadDocument(FormData formData) async {
+    try {
+      final response = await _dio.post('/drivers/documents/upload', data: formData);
+      return {
+        'success': true,
+        'filePath': response.data['filePath'],
+        'message': response.data['message'] ?? 'Document uploaded successfully',
+      };
+    } on DioException catch (e) {
+      debugPrint('❌ Upload Document Error: ${e.message}');
+      return {
+        'success': false,
+        'error': e.response?.data['error'] ?? 'Failed to upload document',
+      };
+    } catch (e) {
+      debugPrint('❌ Unexpected Error: $e');
+      return {
+        'success': false,
+        'error': 'Failed to upload document: $e',
+      };
+    }
+  }
+
+  /// Delete document
+  Future<Map<String, dynamic>> deleteDocument(String documentType) async {
+    try {
+      final response = await _dio.delete('/drivers/documents/$documentType');
+      return {
+        'success': true,
+        'message': response.data['message'] ?? 'Document deleted successfully',
+      };
+    } on DioException catch (e) {
+      debugPrint('❌ Delete Document Error: ${e.message}');
+      return {
+        'success': false,
+        'error': e.response?.data['error'] ?? 'Failed to delete document',
+      };
+    } catch (e) {
+      debugPrint('❌ Unexpected Error: $e');
+      return {
+        'success': false,
+        'error': 'Failed to delete document: $e',
+      };
+    }
+  }
+
+  /// Get verification status
+  Future<Map<String, dynamic>> getVerificationStatus() async {
+    try {
+      debugPrint('🔍 Fetching verification status from backend...');
+      final response = await _dio.get('/drivers/verification-status');
+      debugPrint('✅ Verification status response: ${response.data}');
+      
+      return {
+        'success': true,
+        'status': response.data['status'],
+        'isFullyVerified': response.data['isFullyVerified'] ?? false,
+        'approvedCount': response.data['approvedCount'] ?? 0,
+        'totalRequired': response.data['totalRequired'] ?? 5,
+        'verificationLevel': response.data['verificationLevel'] ?? 'pending',
+        'documents': response.data['documents'] ?? {},
+      };
+    } on DioException catch (e) {
+      debugPrint('❌ Get Verification Status Error: ${e.message}');
+      debugPrint('❌ Response: ${e.response?.data}');
+      return {
+        'success': false,
+        'error': e.response?.data['error'] ?? 'Failed to fetch verification status',
+      };
+    } catch (e) {
+      debugPrint('❌ Unexpected Error: $e');
+      return {
+        'success': false,
+        'error': 'Failed to fetch verification status: $e',
+      };
+    }
   }
 }

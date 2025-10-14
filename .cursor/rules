@@ -1,64 +1,53 @@
-# Drivrr Project Rules
+## Cursor AI Development Rules
 
-## Tech Stack - DO NOT DEVIATE
-- **Frontend**: Flutter (customer_app + driver_app)
-- **Backend**: Node.js + Express + PostgreSQL
-- **Maps**: MapLibre GL Native (3D maps) - NO subscription services
-- **State Management**: Riverpod
-- **Navigation**: GoRouter
-- **Authentication**: JWT + Phone OTP
-- **Real-time**: WebSockets (socket.io)
-- **HTTP**: Dio package
-- **Database**: PostgreSQL with proper migrations
+### 🚨 CRITICAL: Production-Ready Code ONLY
+- **NO MOCK DATA** - All functionality must use real data and real APIs
+- **NO SIMULATIONS** - All features must work with actual user interactions
+- **NO PLACEHOLDER LOGIC** - Implement real business logic, not demos
+- **NO FALLBACK TO FAKE DATA** - If real data fails, show proper error handling
+- **REAL FUNCTIONALITY ONLY** - Every feature must be production-ready
 
-## UI/UX Guidelines
-- **Design**: Material 3 design system
-- **Theme**: Consistent color scheme (purple/blue primary)
-- **Layout**: Symmetrical, professional, clean
-- **Typography**: Google Fonts (Inter)
-- **Components**: Reusable widgets in shared/widgets
-- **Animations**: Subtle, smooth transitions
+### Code Quality Standards
+- Write clean, maintainable, and well-documented code
+- Follow Flutter/Dart best practices and conventions
+- Implement proper error handling and user feedback
+- Use meaningful variable and function names
+- Add appropriate logging for debugging (but not excessive)
 
-## Architecture Rules
-- **Folder Structure**: Feature-based (features/auth, features/home, etc.)
-- **Services**: Core services in core/services
-- **Models**: Proper data models with JSON serialization
-- **Error Handling**: Consistent error handling with user-friendly messages
-- **Validation**: Input validation on both frontend and backend
+### Testing & Validation
+- Test all functionality with real data before considering complete
+- Validate all user inputs and API responses
+- Handle edge cases and error scenarios gracefully
+- Ensure proper loading states and user feedback
 
-## Development Rules
-1. **ALWAYS** test changes before marking as complete
-2. **NEVER** create new features without user approval
-3. **ALWAYS** fix compilation errors immediately
-4. **NEVER** use subscription-based services (Firebase, Google Maps paid)
-5. **ALWAYS** maintain consistent code style
-6. **NEVER** break existing functionality when adding new features
-7. **ALWAYS** use proper imports and avoid conflicts
-8. **NEVER** leave TODO comments in production code
+### Security & Performance
+- Implement proper authentication and authorization
+- Validate all inputs on both client and server side
+- Optimize for performance and memory usage
+- Follow security best practices for data handling
 
-## Map Integration Rules
-- Use MapLibre GL Native for 3D maps
-- Handle location permissions properly
-- Implement offline map caching
-- Use OSRM for routing (free)
-- Handle map errors gracefully
+### Documentation
+- Comment complex business logic
+- Document API endpoints and data structures
+- Explain non-obvious implementation decisions
+- Keep README files updated with setup instructions
 
-## API Integration Rules
-- Use proper error handling
-- Implement retry logic
-- Use environment variables for API keys
-- Validate all API responses
-- Handle network connectivity issues
+### Mobile Development Specific
+- Handle different screen sizes and orientations
+- Implement proper permission handling
+- Optimize for battery usage and network efficiency
+- Follow platform-specific UI guidelines
 
-## Testing Rules
-- Test on real devices
-- Handle edge cases
-- Test offline scenarios
-- Validate user flows end-to-end
+### Backend Development
+- Implement proper database schemas and relationships
+- Use appropriate HTTP status codes and error messages
+- Implement proper logging and monitoring
+- Follow RESTful API design principles
 
-## Code Quality
-- Follow Dart/Flutter best practices
-- Use meaningful variable names
-- Add proper documentation
-- Remove unused imports
-- Fix linter warnings
+### Version Control
+- Write clear, descriptive commit messages
+- Keep commits focused on single features/fixes
+- Use appropriate branching strategies
+- Review code before merging
+
+**Remember: Every line of code should be ready for production deployment.**
