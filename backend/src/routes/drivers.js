@@ -856,4 +856,63 @@ router.get('/admin/driver-documents/:driverId', async (req, res) => {
   }
 });
 
+// Admin: Crop and save document
+router.post('/admin/crop-document', async (req, res) => {
+  try {
+    const { documentId, croppedImageData, cropInfo } = req.body;
+    
+    if (!documentId || !croppedImageData) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Document ID and cropped image data are required' 
+      });
+    }
+    
+    console.log('✂️ Processing document crop request:', {
+      documentId,
+      cropInfo,
+      imageDataLength: croppedImageData.length
+    });
+    
+    // Update the document with cropped image data
+    const updateQuery = `
+      UPDATE driver_documents 
+      SET 
+        file_data = $1,
+        updated_at = NOW()
+      WHERE id = $2
+      RETURNING id, document_type
+    `;
+    
+    const result = await pool.query(updateQuery, [croppedImageData, documentId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Document not found' 
+      });
+    }
+    
+    const document = result.rows[0];
+    
+    console.log(`✅ Document cropped successfully: ${documentId} (${document.document_type})`);
+    console.log('📐 Crop info:', cropInfo);
+    
+    res.json({
+      success: true,
+      message: 'Document cropped and saved successfully',
+      documentId: documentId,
+      documentType: document.document_type,
+      cropInfo: cropInfo
+    });
+    
+  } catch (error) {
+    console.error('❌ Crop document error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to crop document' 
+    });
+  }
+});
+
 module.exports = router;
