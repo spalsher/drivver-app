@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
 import 'package:camera/camera.dart';
 import 'package:drivrr_driver/src/core/services/document_processing_service.dart';
+import 'package:drivrr_driver/src/core/services/document_cropping_service.dart';
 import 'package:drivrr_driver/src/core/services/smart_id_scanner_service.dart';
 import 'package:path_provider/path_provider.dart'; // Added for getTemporaryDirectory
 import 'package:path/path.dart' as p; // Alias to avoid name clash with BuildContext
@@ -31,6 +32,7 @@ enum DocumentState { none, detecting, ready, processing }
 class _SmartDocumentScannerState extends State<SmartDocumentScanner>
     with TickerProviderStateMixin {
   final _processingService = DocumentProcessingService();
+  final _croppingService = DocumentCroppingService();
   final _nativeScanner = SmartIdScannerService();
 
   // Camera controller
@@ -151,10 +153,17 @@ class _SmartDocumentScannerState extends State<SmartDocumentScanner>
     try {
       // Take picture with camera
       final XFile imageFile = await _cameraController!.takePicture();
-      final File file = File(imageFile.path);
+      final File cameraFile = File(imageFile.path);
 
-      // Process with our document processing service
-      final processingResult = await _processingService.processImage(file);
+      debugPrint('📸 Camera image captured: ${cameraFile.path}');
+
+      // Step 1: Automatically crop and correct document from camera image
+      final File croppedFile = await _croppingService.cropDocumentFromImage(cameraFile);
+      
+      debugPrint('✂️ Document cropped: ${croppedFile.path}');
+
+      // Step 2: Process the cropped document with OCR
+      final processingResult = await _processingService.processImage(croppedFile);
 
       if (!mounted) return;
 
@@ -171,9 +180,9 @@ class _SmartDocumentScannerState extends State<SmartDocumentScanner>
         }
       }
 
-      // Extraction is good, proceed
+      // Extraction is good, proceed with cropped document
       _progressController.stop();
-      widget.onDocumentScanned(processingResult.imageFile, processingResult.extractedData);
+      widget.onDocumentScanned(croppedFile, processingResult.extractedData);
     } catch (e) {
       debugPrint('Camera scan error: $e');
       if (mounted) {
